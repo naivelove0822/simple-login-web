@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
   //解構賦值
   const { email, password } = req.body
-
+  //Mongoose語法 findOne()
   Login.findOne({ email: email })
     .lean()
     .then((data) => {
