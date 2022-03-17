@@ -1,13 +1,8 @@
-const mongoose = require('mongoose')
 const Login = require('../login')
 const loginList = require('../../model.json').const
+const db = require('../../config/mongoose')
 
-mongoose.connect('mongodb://localhost/login')
-const db = mongoose.connection
 
-db.on('error', () => {
-  console.log('mongodb error!')
-})
 
 db.once('open', () => {
   console.log('running loginSeeder script...')
