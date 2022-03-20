@@ -5,9 +5,19 @@ const Login = require('../../models/login')
 
 
 router.get('/', (req, res) => {
-  return res.render('index')
+  const user = req.session.user
+  Login.findOne({ firstName: user })
+    .lean()
+    .then(user => {
+      if (user) {
+        console.log('authenticated')
+        return res.render('success', { user })
+      } else {
+        console.log('not authenticated')
+        return res.render('index')
+      }
+    })
 })
-
 
 router.post('/', (req, res) => {
   //解構賦值
@@ -23,22 +33,7 @@ router.post('/', (req, res) => {
         return res.render('index', { password: password })
       } else {
         req.session.user = data.firstName
-        return res.redirect('/success')
-      }
-    })
-})
-
-router.get('/success', (req, res) => {
-  const user = req.session.user
-  return Login.findOne({ firstName: user })
-    .lean()
-    .then(user => {
-      if (user) {
-        console.log('authenticated')
-        return res.render('success', { user })
-      } else {
-        console.log('not authenticated')
-        return res.render('index')
+        return res.redirect('/')
       }
     })
 })
