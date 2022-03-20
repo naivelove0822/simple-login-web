@@ -1,11 +1,13 @@
 const express = require('express')
 const router = express.Router()
-
 const Login = require('../../models/login')
 
+
+
 router.get('/', (req, res) => {
-  res.render('index')
+  return res.render('index')
 })
+
 
 router.post('/', (req, res) => {
   //解構賦值
@@ -19,9 +21,35 @@ router.post('/', (req, res) => {
       }
       else if (data.password !== password) {
         return res.render('index', { password: password })
+      } else {
+        req.session.user = data.firstName
+        return res.redirect('/success')
       }
-      return res.render('success', { firstName: data.firstName })
     })
 })
+
+router.get('/success', (req, res) => {
+  const user = req.session.user
+  return Login.findOne({ firstName: user })
+    .lean()
+    .then(user => {
+      if (user) {
+        console.log('authenticated')
+        return res.render('success', { user })
+      } else {
+        console.log('not authenticated')
+        return res.render('index')
+      }
+    })
+})
+
+
+router.get('/logout', (req, res) => {
+  req.session.destroy()
+  console.log('session destroyed')
+  res.redirect('/')
+})
+
+
 
 module.exports = router
